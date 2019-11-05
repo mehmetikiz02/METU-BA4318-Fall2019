@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+import sys
+
+
+def readCsv(path):
+    data = {"KPMG": [[0, set()], [0, set()]], "EY": [[0, set()], [0, set()]],
+            "PWC": [[0, set()], [0, set()]], "Deloite & Touche": [[0, set()], [0,
+                                                                               set()]]}  # company: [[cashPeopleN, set(meals)], [creditQuantity, set(meals)]]
+    with open(path, "r") as dataFile:
+        dataFile.readline()
+        line = dataFile.readline()
+        while line != '':
+            lst = line.split(';')
+            if lst[3].rstrip('\n') == "Cash":
+                data[lst[0]][0][0] += 1
+                data[lst[0]][0][1].add(lst[1])
+            else:
+                data[lst[0]][1][0] += int(lst[2])
+                data[lst[0]][1][1].add(lst[1])
+            line = dataFile.readline()
+    return data
+
+
+def printRecords(data):
+    for i in data:
+        stuff1 = ', '.join(x for x in data[i][0][1])
+        stuff2 = ', '.join(x for x in data[i][1][1])
+        print("From {0} {1} people have bought {2} on discount and paid in cash,"
+              " also assistants got {3} servings of {4} on credit.".format(i, data[i][0][0],
+                                                                           stuff1, data[i][1][0], stuff2))
+
+
+if __name__ == "__main__":
+    path = sys.argv[1]
+    if "Plaza_Coffee.csv" not in path:
+        path = "Plaza_Coffee.csv"
+    data = readCsv(path)  # Getting path of the csv file as input
+    printRecords(data)
